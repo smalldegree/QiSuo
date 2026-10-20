@@ -1,0 +1,480 @@
+/* ========================================================================
+   Portal 主题系统
+   - 3 套风格: aurora / cybergrid / paper
+   - 通过 <html data-theme="xxx"> 切换
+   - 所有视觉变量集中在此，组件仅消费抽象 var(--xxx)
+   ======================================================================== */
+
+/* -------------------- 通用 Token (三套共用) -------------------- */
+:root {
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --blur-glass: 16px;
+}
+
+/* -------------------- Theme 1: Aurora 极光 (默认) -------------------- */
+html[data-theme='aurora'], :root {
+  color-scheme: dark;
+
+  /* 背景 */
+  --bg-0: #060a1a;
+  --bg-1: #0b1026;
+  --bg-2: #111a3a;
+
+  /* 卡片 */
+  --card-bg: rgba(20, 30, 60, 0.55);
+  --card-border: rgba(120, 170, 255, 0.15);
+  --card-hover-border: rgba(0, 212, 255, 0.45);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 24px rgba(0, 212, 255, 0.12);
+
+  /* 主色 */
+  --accent-cyan: #00d4ff;
+  --accent-violet: #8a5cff;
+  --accent-pink: #ff3fa4;
+  --accent-gradient: linear-gradient(135deg, #00d4ff, #8a5cff);
+  --btn-gradient: linear-gradient(135deg, #00d4ff, #8a5cff);
+
+  /* 文字 */
+  --text-primary: #e6eeff;
+  --text-secondary: #8894b8;
+  --text-muted: #55617f;
+
+  /* 输入框 */
+  --input-bg: rgba(20, 30, 60, 0.6);
+  --input-border: rgba(120, 170, 255, 0.2);
+  --input-focus: #00d4ff;
+
+  /* 标题装饰 */
+  --title-gradient: linear-gradient(90deg, #00d4ff, #8a5cff);
+
+  /* 网格 & 光晕 */
+  --grid-line: rgba(120, 170, 255, 0.06);
+  --glow-a: rgba(0, 212, 255, 0.14);
+  --glow-b: rgba(138, 92, 255, 0.22);
+
+  /* 主题切换器 */
+  --theme-chip-bg: rgba(20, 30, 60, 0.6);
+  --theme-chip-active: linear-gradient(135deg, #00d4ff, #8a5cff);
+}
+
+/* -------------------- Theme 2: CyberGrid 赛博网格 -------------------- */
+html[data-theme='cybergrid'] {
+  color-scheme: dark;
+
+  --bg-0: #02040a;
+  --bg-1: #07111b;
+  --bg-2: #0b1a2a;
+
+  --card-bg: rgba(8, 20, 34, 0.85);
+  --card-border: rgba(0, 255, 136, 0.18);
+  --card-hover-border: rgba(0, 255, 136, 0.7);
+  --card-shadow: 0 0 24px rgba(0, 255, 136, 0.12), inset 0 0 40px rgba(0, 255, 136, 0.04);
+
+  --accent-cyan: #00ff88;
+  --accent-violet: #ff00a0;
+  --accent-pink: #ffea00;
+  --accent-gradient: linear-gradient(135deg, #00ff88, #00d4ff);
+  --btn-gradient: linear-gradient(90deg, #00ff88, #00d4ff);
+
+  --text-primary: #e0fff0;
+  --text-secondary: #6b9a8c;
+  --text-muted: #3d5a52;
+
+  --input-bg: rgba(0, 15, 25, 0.9);
+  --input-border: rgba(0, 255, 136, 0.25);
+  --input-focus: #00ff88;
+
+  --title-gradient: linear-gradient(90deg, #00ff88, #00d4ff);
+
+  --grid-line: rgba(0, 255, 136, 0.08);
+  --glow-a: rgba(0, 255, 136, 0.12);
+  --glow-b: rgba(0, 212, 255, 0.18);
+
+  --theme-chip-bg: rgba(8, 20, 34, 0.8);
+  --theme-chip-active: linear-gradient(90deg, #00ff88, #00d4ff);
+}
+
+/* -------------------- Theme 3: Paper 极简纸面 -------------------- */
+html[data-theme='paper'] {
+  color-scheme: light;
+
+  --bg-0: #f5f6fa;
+  --bg-1: #eef0f6;
+  --bg-2: #e4e7ef;
+
+  --card-bg: #ffffff;
+  --card-border: rgba(28, 42, 70, 0.08);
+  --card-hover-border: rgba(59, 92, 175, 0.25);
+  --card-shadow: 0 1px 3px rgba(28, 42, 70, 0.04), 0 4px 16px rgba(28, 42, 70, 0.06);
+
+  --accent-cyan: #3b5caf;
+  --accent-violet: #6366f1;
+  --accent-pink: #ec4899;
+  --accent-gradient: linear-gradient(135deg, #3b5caf, #6366f1);
+  --btn-gradient: linear-gradient(135deg, #3b5caf, #6366f1);
+
+  --text-primary: #1a2340;
+  --text-secondary: #5c6784;
+  --text-muted: #9aa3b8;
+
+  --input-bg: #f8f9fc;
+  --input-border: rgba(28, 42, 70, 0.12);
+  --input-focus: #3b5caf;
+
+  --title-gradient: linear-gradient(90deg, #1a2340, #3b5caf);
+
+  --grid-line: transparent;
+  --glow-a: transparent;
+  --glow-b: transparent;
+
+  --theme-chip-bg: #eef0f6;
+  --theme-chip-active: linear-gradient(135deg, #3b5caf, #6366f1);
+}
+
+/* ========================================================================
+   通用基础样式 (三套共用，只消费 var(--xxx))
+   ======================================================================== */
+
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; margin: 0; padding: 0; }
+
+html {
+  transition: background-color var(--transition-smooth);
+}
+
+body {
+  font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: var(--text-primary);
+  background-color: var(--bg-0);
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    radial-gradient(ellipse 60% 40% at 20% 10%, var(--glow-a), transparent 70%),
+    radial-gradient(ellipse 50% 30% at 90% 90%, var(--glow-b), transparent 70%),
+    linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  background-size: 40px 40px, 40px 40px, auto, auto, auto;
+  background-attachment: fixed;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+}
+
+/* CyberGrid 扫描线特效 */
+html[data-theme='cybergrid'] body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0, transparent 2px,
+    rgba(0, 255, 136, 0.03) 3px, transparent 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+/* Paper 不显示网格 & 光晕 */
+html[data-theme='paper'] body {
+  background-image: linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  background-size: auto;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--card-hover-border); }
+
+/* -------------------- 布局 -------------------- */
+.app-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 28px 80px;
+  position: relative;
+  z-index: 2;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.app-header-left { flex: 1; min-width: 260px; }
+.app-header-right { display: flex; align-items: center; gap: 14px; }
+
+.app-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: var(--title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.app-title::before {
+  content: '';
+  width: 6px;
+  height: 26px;
+  border-radius: 3px;
+  background: var(--btn-gradient);
+  box-shadow: 0 0 12px var(--accent-cyan);
+}
+html[data-theme='paper'] .app-title::before { box-shadow: none; }
+html[data-theme='cybergrid'] .app-title::before { box-shadow: 0 0 16px var(--accent-cyan); }
+
+.app-subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+/* -------------------- 主按钮 -------------------- */
+.btn-primary {
+  background: var(--btn-gradient) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 16px rgba(0, 212, 255, 0.25);
+  transition: all var(--transition-smooth);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(0, 212, 255, 0.4) !important;
+}
+html[data-theme='paper'] .btn-primary {
+  box-shadow: 0 2px 8px rgba(59, 92, 175, 0.2);
+}
+html[data-theme='paper'] .btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(59, 92, 175, 0.35) !important;
+}
+
+/* -------------------- 卡片网格 -------------------- */
+.entry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 22px;
+}
+
+.entry-card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  cursor: pointer;
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  transition: transform var(--transition-smooth),
+              box-shadow var(--transition-smooth),
+              border-color var(--transition-smooth);
+  overflow: hidden;
+}
+html[data-theme='paper'] .entry-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: var(--radius-md);
+}
+
+.entry-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--btn-gradient);
+  opacity: 0;
+  transition: opacity var(--transition-smooth);
+}
+.entry-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--card-hover-border);
+  box-shadow: var(--card-shadow);
+}
+.entry-card:hover::before { opacity: 1; }
+
+html[data-theme='paper'] .entry-card:hover { transform: translateY(-2px); }
+
+.entry-icon {
+  width: 54px; height: 54px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+.entry-icon::after {
+  content: '';
+  position: absolute; inset: -2px;
+  border-radius: inherit;
+  background: inherit;
+  filter: blur(14px);
+  opacity: 0.3;
+  z-index: -1;
+}
+html[data-theme='paper'] .entry-icon::after { opacity: 0; filter: none; }
+
+.entry-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.entry-url {
+  font-size: 12px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+.entry-actions {
+  position: absolute;
+  top: 12px; right: 12px;
+  display: flex; gap: 6px;
+  opacity: 0;
+  transition: opacity var(--transition-smooth);
+}
+.entry-card:hover .entry-actions { opacity: 1; }
+.entry-actions .action-btn {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all 0.15s;
+}
+.entry-actions .action-btn:hover {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  background: rgba(0, 212, 255, 0.1);
+}
+.entry-actions .action-btn.danger:hover {
+  color: var(--accent-pink);
+  border-color: var(--accent-pink);
+  background: rgba(255, 63, 164, 0.1);
+}
+
+/* -------------------- 空态 -------------------- */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 52px; margin-bottom: 16px; opacity: 0.5; }
+.empty-state p { font-size: 14px; letter-spacing: 1px; }
+
+/* -------------------- Dialog -------------------- */
+.el-dialog {
+  background: var(--bg-2) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--card-shadow) !important;
+}
+html[data-theme='paper'] .el-dialog {
+  background: #ffffff !important;
+  backdrop-filter: none;
+  border: 1px solid var(--card-border) !important;
+}
+
+.el-dialog__title { color: var(--text-primary) !important; font-weight: 600 !important; letter-spacing: 1px; }
+.el-dialog__headerbtn .el-dialog__close { color: var(--text-secondary) !important; }
+.el-form-item__label { color: var(--text-secondary) !important; }
+
+.el-input__wrapper {
+  background: var(--input-bg) !important;
+  box-shadow: 0 0 0 1px var(--input-border) inset !important;
+  border-radius: var(--radius-md) !important;
+}
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--input-focus) inset, 0 0 12px rgba(0, 212, 255, 0.18) !important;
+}
+html[data-theme='paper'] .el-input__wrapper.is-focus { box-shadow: 0 0 0 1px var(--input-focus) inset !important; }
+.el-input__inner { color: var(--text-primary) !important; }
+.el-input__inner::placeholder { color: var(--text-muted) !important; }
+
+/* -------------------- 颜色选择 -------------------- */
+.color-picker { display: flex; flex-wrap: wrap; gap: 10px; }
+.color-dot {
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.color-dot:hover { transform: scale(1.1); }
+.color-dot.active {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px var(--accent-cyan), 0 0 12px currentColor;
+}
+html[data-theme='paper'] .color-dot.active {
+  box-shadow: 0 0 0 2px var(--accent-cyan);
+}
+
+/* ========================================================================
+   主题切换器
+   ======================================================================== */
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: var(--theme-chip-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  backdrop-filter: blur(var(--blur-glass));
+}
+html[data-theme='paper'] .theme-switcher { backdrop-filter: none; background: var(--theme-chip-bg); }
+
+.theme-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.theme-chip:hover { color: var(--text-primary); }
+.theme-chip.active {
+  color: #fff;
+  background: var(--theme-chip-active);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+.theme-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+
+/* Element Plus 默认按钮适配 */
+.el-button {
+  background-color: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+  color: var(--text-primary) !important;
+}
+html[data-theme='paper'] .el-button { background-color: #ffffff !important; }
+.el-button:hover {
+  color: var(--accent-cyan) !important;
+  border-color: var(--accent-cyan) !important;
+}
